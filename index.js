@@ -43,6 +43,20 @@ app.post('/classes', (req, res) => {
     });
 });
 
+app.delete('/classes', (req, res) => {
+    const { id } = req.query;
+
+    const query = 'DELETE FROM YogaClass WHERE id = ?';
+
+    db.run(query, [id], function (err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json({ message: 'Class deleted'});
+        }
+    })
+})
+
 // 3. Get all class instances for a specific class
 app.get('/instances', (req, res) => {
     const classId = req.query.classId;
@@ -138,15 +152,11 @@ app.post('/cart/submit', (req, res) => {
 app.get('/bookings', (req, res) => {
     const { email } = req.query;
 
-    if (!email) {
-        return res.status(400).send({ error: 'Email is required' });
-    }
-
     const query = `
         SELECT YogaClass.id, YogaClass.day, YogaClass.time, YogaClass.type, YogaClass.price 
         FROM Bookings
         INNER JOIN YogaClass ON Bookings.class_id = YogaClass.id
-        WHERE Bookings.email = ?`;
+    `;
 
     db.all(query, [email], (err, rows) => {
         if (err) {
@@ -157,6 +167,20 @@ app.get('/bookings', (req, res) => {
         res.status(200).send({ bookings: rows });
     });
 });
+
+app.delete('/bookings', (req, res) => {
+    const { id } = req.query;
+
+    const query = 'DELETE FROM Bookings where id = ?';
+
+    db.run(query, [id], function (err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json({ message: `Booking with ID ${id} deleted.` });
+        }
+    });
+})
 
 // Start the server
 app.listen(port, () => {
