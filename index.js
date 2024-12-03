@@ -14,8 +14,14 @@ app.use(cors());
 
 // 1. Get all yoga classes
 app.get('/classes', (req, res) => {
-    const query = 'SELECT * FROM YogaClass';
-    db.all(query, [], (err, rows) => {
+    const { day } = req.query;
+    day ? db.all('SELECT * FROM YogaClass WHERE day = ?', [day], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.json(rows);
+        }
+    }) : db.all('SELECT * FROM YogaClass', [], (err, rows) => {
         if (err) {
             res.status(500).json({ error: err.message });
         } else {
@@ -153,7 +159,7 @@ app.get('/bookings', (req, res) => {
     const { email } = req.query;
 
     const query = `
-        SELECT YogaClass.id, YogaClass.day, YogaClass.time, YogaClass.type, YogaClass.price 
+        SELECT YogaClass.id, YogaClass.day, YogaClass.time, YogaClass.type, YogaClass.price
         FROM Bookings
         INNER JOIN YogaClass ON Bookings.class_id = YogaClass.id
     `;
