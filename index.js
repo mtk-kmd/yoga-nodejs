@@ -159,7 +159,7 @@ app.get('/bookings', (req, res) => {
     const { email } = req.query;
 
     const query = `
-        SELECT YogaClass.id, YogaClass.day, YogaClass.time, YogaClass.type, YogaClass.price
+        SELECT Bookings.id as bookingId, YogaClass.id as classId, YogaClass.day, YogaClass.time, YogaClass.type, YogaClass.price
         FROM Bookings
         INNER JOIN YogaClass ON Bookings.class_id = YogaClass.id
     `;
